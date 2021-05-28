@@ -19,9 +19,16 @@
 			format"\n", OCF_READ == (req)->rw ? "RD" : "WR", \
 			__func__, ##__VA_ARGS__)
 
+#define OCF_DEBUG_CACHE(cache, format, ...) \
+	ocf_cache_log(cache, log_info, "[Concurrency][Cache][%s] - " \
+			format"\n", \
+			__func__, ##__VA_ARGS__)
+
+
 #else
 #define OCF_DEBUG_TRACE(cache)
 #define OCF_DEBUG_RQ(req, format, ...)
+#define OCF_DEBUG_CACHE(cache, format, ...)
 #endif
 
 #define OCF_CACHE_LINE_ACCESS_WR	INT_MAX
@@ -492,7 +499,6 @@ static inline void ocf_alock_unlock_one_rd_common(struct ocf_alock *alock,
 {
 	bool locked = false;
 	bool exchanged = true;
-	uint32_t i = 0;
 
 	uint32_t idx = _WAITERS_LIST_ITEM(entry);
 	struct ocf_alock_waiters_list *lst = &alock->waiters_lsts[idx];
@@ -530,8 +536,6 @@ static inline void ocf_alock_unlock_one_rd_common(struct ocf_alock *alock,
 				ENV_BUG();
 		}
 
-		i++;
-
 		if (locked) {
 			exchanged = false;
 			list_del(iter);
@@ -564,7 +568,7 @@ void ocf_alock_unlock_one_rd(struct ocf_alock *alock,
 {
 	unsigned long flags = 0;
 
-	OCF_DEBUG_RQ(alock->cache, "Cache entry = %u", entry);
+	OCF_DEBUG_CACHE(alock->cache, "Cache entry unlock one rd = %u", entry);
 
 	/* Lock waiters list */
 	ocf_alock_waitlist_lock(alock, entry, flags);
@@ -580,7 +584,6 @@ void ocf_alock_unlock_one_rd(struct ocf_alock *alock,
 static inline void ocf_alock_unlock_one_wr_common(struct ocf_alock *alock,
 		const ocf_cache_line_t entry)
 {
-	uint32_t i = 0;
 	bool locked = false;
 	bool exchanged = true;
 
@@ -620,8 +623,6 @@ static inline void ocf_alock_unlock_one_wr_common(struct ocf_alock *alock,
 				ENV_BUG();
 		}
 
-		i++;
-
 		if (locked) {
 			exchanged = false;
 			list_del(iter);
@@ -648,7 +649,7 @@ void ocf_alock_unlock_one_wr(struct ocf_alock *alock,
 {
 	unsigned long flags = 0;
 
-	OCF_DEBUG_RQ(alock->cache, "Cache entry = %u", entry);
+	OCF_DEBUG_CACHE(alock->cache, "Cache entry unlock one wr = %u", entry);
 
 	/* Lock waiters list */
 	ocf_alock_waitlist_lock(alock, entry, flags);
