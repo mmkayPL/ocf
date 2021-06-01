@@ -76,55 +76,55 @@
 int __wrap_ocf_alock_init(struct ocf_alock **self, unsigned num_entries,
   const char* name, struct ocf_alock_lock_cbs *cbs, ocf_cache_t cache)
 {
-	return __real_ocf_alock_init(self, num_entries, name, cbs, cache);
+	return ocf_alock_init(self, num_entries, name, cbs, cache);
 }
 
 void __wrap_ocf_alock_waitlist_remove_entry(struct ocf_alock *alock,
  struct ocf_request *req, ocf_cache_line_t entry, int i, int rw)
 {
-	__real_ocf_alock_waitlist_remove_entry(alock, req, entry, i, rw);
+	ocf_alock_waitlist_remove_entry(alock, req, entry, i, rw);
 }
 
 void __wrap_ocf_alock_deinit(struct ocf_alock **self)
 {
-	__real_ocf_alock_deinit(self);
+	ocf_alock_deinit(self);
 }
 
 void __wrap_ocf_alock_mark_index_locked(struct ocf_alock *alock,
   struct ocf_request *req, unsigned index, _Bool locked)
 {
-	__real_ocf_alock_mark_index_locked(alock, req, index, locked);
+	ocf_alock_mark_index_locked(alock, req, index, locked);
 }
 
 void __wrap_ocf_alock_unlock_one_wr(struct ocf_alock *alock,
   const ocf_cache_line_t entry_idx)
 {
-	__real_ocf_alock_unlock_one_wr(alock, entry_idx);
+	ocf_alock_unlock_one_wr(alock, entry_idx);
 }
 
 int __wrap_ocf_alock_lock_wr(struct ocf_alock *alock,
   struct ocf_request *req, ocf_req_async_lock_cb cmpl)
 {
-	return __real_ocf_alock_lock_wr(alock, req, cmpl);
+	return ocf_alock_lock_wr(alock, req, cmpl);
 }
 
 int __wrap_ocf_alock_lock_rd(struct ocf_alock *alock,
   struct ocf_request *req, ocf_req_async_lock_cb cmpl)
 {
-	return __real_ocf_alock_lock_rd(alock, req, cmpl);
+	return ocf_alock_lock_rd(alock, req, cmpl);
 }
 
 
 void __wrap_ocf_alock_unlock_one_rd(struct ocf_alock *alock,
   const ocf_cache_line_t entry)
 {
-	__real_ocf_alock_unlock_one_rd(alock, entry);
+	ocf_alock_unlock_one_rd(alock, entry);
 }
 
 void __wrap_ocf_alock_is_index_locked(struct ocf_alock *alock,
 		  struct ocf_request *req, unsigned index)
 {
-	__real_ocf_alock_is_index_locked(alock, req, index);
+	ocf_alock_is_index_locked(alock, req, index);
 }
 
 bool __wrap_ocf_alock_lock_one_wr(struct ocf_alock *alock,
@@ -132,35 +132,35 @@ bool __wrap_ocf_alock_lock_one_wr(struct ocf_alock *alock,
 		  void *req, uint32_t idx)
 {
 	usleep(rand() % 100);
-	return __real_ocf_alock_lock_one_wr(alock, entry, cmpl, req, idx);
+	return ocf_alock_lock_one_wr(alock, entry, cmpl, req, idx);
 }
 
 bool __wrap_ocf_alock_trylock_entry_rd_idle(struct ocf_alock *alock,
 		  ocf_cache_line_t entry)
 {
-	return __real_ocf_alock_trylock_entry_rd_idle(alock, entry);
+	return ocf_alock_trylock_entry_rd_idle(alock, entry);
 }
 
 bool __wrap_ocf_alock_lock_one_rd(struct ocf_alock *alock, const ocf_cache_line_t entry, ocf_req_async_lock_cb cmpl,
        void *req, uint32_t idx)
 {
 	usleep(rand() % 100);
-	return __real_ocf_alock_lock_one_rd(alock, entry, cmpl, req, idx);
+	return ocf_alock_lock_one_rd(alock, entry, cmpl, req, idx);
 }
 
 bool __wrap_ocf_alock_waitlist_is_empty(struct ocf_alock *alock, ocf_cache_line_t entry)
 {
-	return __real_ocf_alock_waitlist_is_empty(alock, entry);
+	return ocf_alock_waitlist_is_empty(alock, entry);
 }
 
 bool __wrap_ocf_alock_trylock_one_rd(struct ocf_alock *alock, ocf_cache_line_t entry)
 {
-	return __real_ocf_alock_trylock_one_rd(alock, entry);
+	return ocf_alock_trylock_one_rd(alock, entry);
 }
 
 bool __wrap_ocf_alock_trylock_entry_wr(struct ocf_alock *alock, ocf_cache_line_t entry)
 {
-	return __real_ocf_alock_trylock_entry_wr(alock, entry);
+	return ocf_alock_trylock_entry_wr(alock, entry);
 }
 
 void __wrap___assert_fail (const char *__assertion, const char *__file,
