@@ -311,7 +311,12 @@ static void metadata_io_req_submit(struct metadata_io_request *m_req)
 	if (a_req->mio_conc) {
 		lock = ocf_mio_async_lock(a_req->mio_conc, m_req,
 			matadata_io_page_lock_acquired);
-		/* TODO: error handling for lock < 0 */
+
+		if (lock != OCF_LOCK_ACQUIRED) {
+			a_req->error = lock;
+			metadata_io_req_finalize(m_req);
+			return;
+		}
 	}
 
 	if (!a_req->mio_conc || lock == OCF_LOCK_ACQUIRED)
@@ -343,7 +348,7 @@ static uint32_t metadata_io_max_page(ocf_cache_t cache)
 	uint32_t volume_max_io_pages = ocf_volume_get_max_io_size(
 			&cache->device->volume) / PAGE_SIZE;
 	struct metadata_io_request *m_req;
-	uint32_t request_map_capacity_pages = sizeof(m_req->map) * 8;
+	uint32_t request_map_capacity_pages = sizeof(m_req->alock_status) * 8;
 
 	return OCF_MIN(volume_max_io_pages, request_map_capacity_pages);
 }
@@ -453,6 +458,8 @@ static int metadata_io_i_asynch(ocf_cache_t cache, ocf_queue_t queue, int dir,
 		m_req->req.info.internal = true;
 		m_req->req.rw = dir;
 		m_req->req.map = LIST_POISON1;
+		m_req->req.alock_status = &m_req->alock_status;
+		m_req->req.alloc_core_line_count = m_req->req.core_line_count;
 
 		/* If req_count == io_count and count is not multiple of
 		 * max_count, for last we can allocate data smaller that

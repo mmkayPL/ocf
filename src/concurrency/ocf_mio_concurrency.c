@@ -127,7 +127,7 @@ void ocf_mio_async_unlock(struct ocf_alock *alock,
 		ocf_alock_mark_index_locked(alock, req, i, false);
 	}
 
-	m_req->map = 0;
+	m_req->alock_status = 0;
 }
 
 

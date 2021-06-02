@@ -39,7 +39,7 @@
 #define _WAITERS_LIST_ENTRIES \
 	(_WAITERS_LIST_SIZE / sizeof(struct ocf_alock_waiters_list))
 
-#define _WAITERS_LIST_ITEM(cache_line) ((cache_line) % _WAITERS_LIST_ENTRIES)
+#define _WAITERS_LIST_ITEM(entry) ((entry) % _WAITERS_LIST_ENTRIES)
 
 struct ocf_alock_waiter {
 	ocf_cache_line_t entry;
@@ -71,15 +71,15 @@ void ocf_alock_mark_index_locked(struct ocf_alock *alock,
 		struct ocf_request *req, unsigned index, bool locked)
 {
 	if (locked)
-		env_bit_set(index, req->alock_entry_map);
+		env_bit_set(index, req->alock_status);
 	else
-		env_bit_clear(index, req->alock_entry_map);
+		env_bit_clear(index, req->alock_status);
 }
 
 bool ocf_alock_is_index_locked(struct ocf_alock *alock,
 		struct ocf_request *req, unsigned index)
 {
-	return env_bit_test(index, req->alock_entry_map);
+	return env_bit_test(index, req->alock_status);
 }
 
 size_t ocf_alock_obj_size(void)
@@ -682,6 +682,7 @@ void ocf_alock_waitlist_remove_entry(struct ocf_alock *alock,
 			if (waiter->req == req) {
 				list_del(iter);
 				env_allocator_del(alock->allocator, waiter);
+				break;
 			}
 		}
 	}

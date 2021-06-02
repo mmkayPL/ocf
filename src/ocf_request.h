@@ -225,14 +225,12 @@ struct ocf_request {
 	uint32_t alock_rw;
 	/*!< Read/Write mode for alock*/
 
-	uint8_t *alock_entry_map;
+	uint8_t *alock_status;
 	/*!< Mapping for locked/unlocked alock entries */
 
 	struct ocf_map_info *map;
 
 	struct ocf_map_info __map[0];
-
-	uint8_t __alock_entry_map[0];
 };
 
 typedef void (*ocf_req_end_t)(struct ocf_request *req, int error);

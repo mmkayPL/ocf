@@ -340,7 +340,7 @@ void thread(void *_ctx)
 	bool locked;
 
 	ctx->treq.r.map = &ctx->treq.map;
-	ctx->treq.r.alock_entry_map = &ctx->treq.alock_map;
+	ctx->treq.r.alock_status = &ctx->treq.alock_map;
 	pthread_cond_init(&ctx->treq.completion, NULL);
 	pthread_mutex_init(&ctx->treq.completion_mutex, NULL);
 
@@ -353,7 +353,7 @@ void thread(void *_ctx)
 	while (i-- && !ctx->terminated)
 	{
 		rw = rand() % 2;
-		single = (rand() % 4 == 0);
+		single = (rand() % 5 == 0);
 
 		if (!single) {
 			shuffle(permutation, ctx->clines);
