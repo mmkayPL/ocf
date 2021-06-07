@@ -301,6 +301,15 @@ static void matadata_io_page_lock_acquired(struct ocf_request *req)
 	ocf_engine_push_req_front(req, true);
 }
 
+void metadata_io_req_finalize(struct metadata_io_request *m_req)
+{
+	struct metadata_io_request_asynch *a_req = m_req->asynch;
+
+	if (env_atomic_dec_return(&a_req->req_active) == 0)
+		env_mpool_del(m_req->cache->owner->resources.mio, a_req,
+				a_req->alloc_req_count);
+}
+
 static void metadata_io_req_submit(struct metadata_io_request *m_req)
 {
 	struct metadata_io_request_asynch *a_req = m_req->asynch;
@@ -332,15 +341,6 @@ void metadata_io_req_end(struct metadata_io_request *m_req)
 		a_req->on_complete(cache, a_req->context, a_req->error);
 
 	ctx_data_free(cache->owner, m_req->data);
-}
-
-void metadata_io_req_finalize(struct metadata_io_request *m_req)
-{
-	struct metadata_io_request_asynch *a_req = m_req->asynch;
-
-	if (env_atomic_dec_return(&a_req->req_active) == 0)
-		env_mpool_del(m_req->cache->owner->resources.mio, a_req,
-				a_req->alloc_req_count);
 }
 
 static uint32_t metadata_io_max_page(ocf_cache_t cache)
@@ -458,7 +458,7 @@ static int metadata_io_i_asynch(ocf_cache_t cache, ocf_queue_t queue, int dir,
 		m_req->req.info.internal = true;
 		m_req->req.rw = dir;
 		m_req->req.map = LIST_POISON1;
-		m_req->req.alock_status = &m_req->alock_status;
+		m_req->req.alock_status = (uint8_t*)&m_req->alock_status;
 		m_req->req.alloc_core_line_count = m_req->req.core_line_count;
 
 		/* If req_count == io_count and count is not multiple of

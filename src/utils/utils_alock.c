@@ -79,7 +79,7 @@ void ocf_alock_mark_index_locked(struct ocf_alock *alock,
 bool ocf_alock_is_index_locked(struct ocf_alock *alock,
 		struct ocf_request *req, unsigned index)
 {
-	return env_bit_test(index, req->alock_status);
+	return env_bit_test(index, (unsigned long*)req->alock_status);
 }
 
 size_t ocf_alock_obj_size(void)

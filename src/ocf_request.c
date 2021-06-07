@@ -90,7 +90,7 @@ struct ocf_request *ocf_req_new(ocf_queue_t queue, ocf_core_t core,
 
 	if (map_allocated) {
 		req->map = req->__map;
-		req->alock_status = &req->__map[core_line_count];
+		req->alock_status = (uint8_t*)&req->__map[core_line_count];
 		req->alloc_core_line_count = core_line_count;
 	} else {
 		req->alloc_core_line_count = 1;
@@ -216,7 +216,7 @@ void ocf_req_put(struct ocf_request *req)
 	if (!req->d2c && req->io_queue != req->cache->mngt_queue)
 		ocf_refcnt_dec(&req->cache->refcnt.metadata);
 
-	if (req->alock_status != &req->__map[req->core_line_count])
+	if (req->alock_status != (uint8_t*)&req->__map[req->core_line_count])
 		env_free(req->alock_status);
 
 	if (req->map != req->__map)

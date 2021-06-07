@@ -69,7 +69,7 @@ static int ocf_mio_lock_fast(struct ocf_alock *alock,
 }
 
 static int ocf_mio_lock_slow(struct ocf_alock *alock,
-		struct ocf_request *req, ocf_req_async_lock_cb cmpl, int rw)
+		struct ocf_request *req, int rw, ocf_req_async_lock_cb cmpl)
 {
 	int32_t i;
 	ocf_cache_line_t entry;
