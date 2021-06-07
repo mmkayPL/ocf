@@ -491,12 +491,13 @@ static void cctest(unsigned num_threads, unsigned num_iterations, unsigned cline
 	{
 		if (!threads[i].finished)
 		{
-			unsigned num_clines = threads[i].treq.r.core_line_count;
+			struct ocf_request *req = &threads[i].treq.r;
+			unsigned num_clines = req->core_line_count;
 			struct ocf_map_info **clines = malloc(num_clines *
 					sizeof(*clines));
 			for (j = 0; j < num_clines; j++)
 			{
-				clines[j] = &threads[i].treq.r.map[j];
+				clines[j] = &req->map[j];
 			}
 
 			qsort(clines, num_clines, sizeof(*clines), cmp_map);
@@ -504,8 +505,8 @@ static void cctest(unsigned num_threads, unsigned num_iterations, unsigned cline
 			print_message("thread no %u\n", i);
 			for (j = 0; j < num_clines; j++) {
 				struct ocf_map_info *map = clines[j];
-				const char *status = map->rd_locked ? "R" :
-						map->wr_locked ? "W" : "X";
+				const char *status = env_bit_test(index, (unsigned long*)req->alock_status) ?
+						(req->alock_rw == OCF_WRITE ? "W" : "R") : "X";
 				print_message("[%u] %u %s\n", j, map->coll_idx, status);
 			}
 

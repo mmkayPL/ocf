@@ -61,12 +61,6 @@ struct ocf_map_info {
 	uint16_t status : 8;
 	/*!< Traverse or mapping status - HIT, MISS, etc... */
 
-	uint16_t rd_locked : 1;
-	/*!< Indicates if cache line is locked for READ access */
-
-	uint16_t wr_locked : 1;
-	/*!< Indicates if cache line is locked for WRITE access */
-
 	uint16_t invalid : 1;
 	/*!< This bit indicates that mapping is invalid */
 
